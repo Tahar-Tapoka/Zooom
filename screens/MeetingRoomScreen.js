@@ -4,41 +4,69 @@ import {
   View,
   TextInput,
   Text,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { Camera, CameraType } from "expo-camera";
 
 const MeetingRoomScreen = () => {
   const [name, setName] = useState();
   const [roomId, setRoomId] = useState();
+  const [activeUsers, setActiveUsers] = useState();
+  const [startCam, setStartCam] = useState(false);
+
+  const startCamera = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status === "granted") {
+      setStartCam(true);
+    } else {
+      Alert.alert("Access denied");
+    }
+  };
+
+  const joinRoom = () => {
+    startCamera();
+    socket.emit("join-room", { roomId: roomId, user: name });
+  };
 
   useEffect(() => {
-    const API_URL = "http://localhost:3001/";
+    const API_URL = "http://192.168.47.203:3001/";
+    socket = io(`${API_URL}`);
+    console.log("hello");
+    socket.on("connection", () => console.log("connected"));
+    socket.on("room-users", (users) => {
+      console.log("Active users", users);
+      setActiveUsers(users);
+    });
   }, []);
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={(name) => setName(name)}
-        placeholder="Enter your name"
-        placeholderTextColor="#767476"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={(id) => setRoomId(id)}
-        value={roomId}
-        placeholder="Enter Room Id"
-        keyboardType="numeric"
-        placeholderTextColor="#767476"
-      />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => console.log(name, "  ", roomId)}
-      >
-        <Text style={styles.buttonTxt}>Start Meeting</Text>
-      </TouchableOpacity>
+      {startCam ? (
+        <Camera style={{ flex: 1 }} type={CameraType.front} />
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={(name) => setName(name)}
+            placeholder="Enter your name"
+            placeholderTextColor="#767476"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={(id) => setRoomId(id)}
+            value={roomId}
+            placeholder="Enter Room Id"
+            keyboardType="numeric"
+            placeholderTextColor="#767476"
+          />
+          <TouchableOpacity style={styles.button} onPress={() => joinRoom()}>
+            <Text style={styles.buttonTxt}>Start Meeting</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
