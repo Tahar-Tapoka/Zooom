@@ -1,15 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import ButtonItem from "./ButtonItem";
+import { useNavigation } from "@react-navigation/native";
 
 const MenuButtons = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <ButtonItem
         title="New meeting"
         color="#FF751F"
         icon="video-camera"
-        onPress={() => console.log("New meeting")}
+        onPress={() => navigation.navigate("MeetingRoom")}
       />
       <ButtonItem
         title="Join"

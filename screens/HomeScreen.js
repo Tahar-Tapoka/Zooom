@@ -1,4 +1,5 @@
 import { SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import React from "react";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
@@ -12,6 +13,7 @@ const HomeScreen = () => {
       <SearchBar />
       <MenuButtons />
       <ContactsMenu />
+      <ExpoStatusBar style="auto" />
     </SafeAreaView>
   );
 };
