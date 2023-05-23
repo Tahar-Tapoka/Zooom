@@ -1,27 +1,27 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import MenuButton from "./MenuButton";
+import ButtonItem from "./ButtonItem";
 
 const MenuButtons = () => {
   return (
     <View style={styles.container}>
-      <MenuButton
+      <ButtonItem
         title="New meeting"
-        color="orange"
+        color="#FF751F"
         icon="video-camera"
         onPress={() => console.log("New meeting")}
       />
-      <MenuButton
+      <ButtonItem
         title="Join"
         icon="plus-square"
         onPress={() => console.log("Join")}
       />
-      <MenuButton
+      <ButtonItem
         title="Schedule"
         icon="calendar"
         onPress={() => console.log("Schedule")}
       />
-      <MenuButton
+      <ButtonItem
         title="Share Screen"
         icon="upload"
         onPress={() => console.log("Share Screen")}
@@ -34,9 +34,11 @@ export default MenuButtons;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    paddingVertical: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderBottomColor: "#1F1F1F",
+    borderBottomWidth: 1,
   },
 });

@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
-const MenuButton = ({ title, icon, color = "blue", onPress }) => {
+const ButtonItem = ({ title, icon, color = "#0470DC", onPress }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -16,7 +16,7 @@ const MenuButton = ({ title, icon, color = "blue", onPress }) => {
   );
 };
 
-export default MenuButton;
+export default ButtonItem;
 
 const styles = StyleSheet.create({
   container: {
