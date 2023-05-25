@@ -5,16 +5,21 @@ import {
   TextInput,
   Text,
   Alert,
+  SafeAreaView,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Camera, CameraType } from "expo-camera";
+import CameraMenuButtons from "../components/CameraMenuButtons";
+import ChatScreen from "./ChatScreen";
 
 const MeetingRoomScreen = () => {
   const [name, setName] = useState();
   const [roomId, setRoomId] = useState();
-  const [activeUsers, setActiveUsers] = useState();
+  const [activeUsers, setActiveUsers] = useState([]);
   const [startCam, setStartCam] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const startCamera = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -31,7 +36,7 @@ const MeetingRoomScreen = () => {
   };
 
   useEffect(() => {
-    const API_URL = "http://192.168.47.203:3001/";
+    const API_URL = "http://192.168.95.203:3001/";
     socket = io(`${API_URL}`);
     console.log("hello");
     socket.on("connection", () => console.log("connected"));
@@ -44,7 +49,42 @@ const MeetingRoomScreen = () => {
   return (
     <View style={styles.container}>
       {startCam ? (
-        <Camera style={{ flex: 1 }} type={CameraType.front} />
+        <SafeAreaView style={{ flex: 1 }}>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <ChatScreen
+              setModalVisible={setModalVisible}
+              modalVisible={modalVisible}
+            />
+          </Modal>
+
+          <View style={{ justifyContent: "center", flex: 1 }}>
+            <View style={styles.camerasContainer}>
+              <Camera
+                style={{
+                  width: activeUsers.length === 1 ? "100%" : 190,
+                  height: activeUsers.length === 1 ? 600 : 190,
+                }}
+                type={CameraType.front}
+              />
+              {activeUsers
+                .filter((usr) => usr.user !== name)
+                .map((usr) => (
+                  <View key={usr.user} style={styles.activeUserContainer}>
+                    <Text style={{ color: "white" }}>{usr.user}</Text>
+                  </View>
+                ))}
+            </View>
+          </View>
+          <CameraMenuButtons chatButtonHandler={setModalVisible} />
+        </SafeAreaView>
       ) : (
         <>
           <TextInput
@@ -99,5 +139,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "white",
     textAlign: "center",
+  },
+  activeUserContainer: {
+    borderColor: "grey",
+    borderWidth: 1,
+    width: 190,
+    height: 190,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  camerasContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    alignItems: "center",
   },
 });
